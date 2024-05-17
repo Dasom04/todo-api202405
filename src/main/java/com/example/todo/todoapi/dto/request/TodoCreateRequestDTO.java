@@ -21,7 +21,7 @@ public class TodoCreateRequestDTO {
     // DTO를 엔터티로 변환
     public Todo toEntity() {
         return Todo.builder()
-                .title((this.title))
+                .title(this.title)
                 .build();
     }
 

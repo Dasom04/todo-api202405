@@ -22,17 +22,17 @@ public class TodoService {
     private final TodoRepository todoRepository;
 
 
-    public TodoListResponseDTO create(TodoCreateRequestDTO requestDTO) throws Exception{
+    public TodoListResponseDTO create(TodoCreateRequestDTO requestDTO) throws Exception {
         todoRepository.save(requestDTO.toEntity());
         log.info("할 일 저장 완료! 제목: {}", requestDTO.getTitle());
         return retrieve();
     }
 
     // 할 일 목록 가져오기
-    public TodoListResponseDTO retrieve() throws Exception{
+    public TodoListResponseDTO retrieve() throws Exception {
         List<Todo> entityList = todoRepository.findAll();
 
-        final List<TodoDetailResponseDTO> dtoList = entityList.stream()
+        List<TodoDetailResponseDTO> dtoList = entityList.stream()
 //                .map(entity -> new TodoDetailResponseDTO(entity))
                 .map(TodoDetailResponseDTO::new) // 람다식
                 .collect(Collectors.toList());
@@ -42,4 +42,19 @@ public class TodoService {
                 .build();
 
     }
+
+    // 할 일 목록 삭제하기
+    public TodoListResponseDTO delete(final String todoId) throws Exception { // 매개변수에 final을 붙이면 service에서 controller로 넘어온 데이터(매개변수)를 변경할 수 없다.
+
+            Todo todo = todoRepository.findById(todoId).orElseThrow(
+                    () -> {
+                        log.error("ID가 존재하지 않아서 실패했습니다. - ID: {}", todoId);
+                        throw new RuntimeException("id가 존재하지 않아서 삭제에 실패했습니다.");
+                    }
+            );
+            todoRepository.deleteById(todoId);
+            return retrieve();
+
+    }
+
 }
