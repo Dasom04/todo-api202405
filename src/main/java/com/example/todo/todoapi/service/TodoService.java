@@ -50,7 +50,7 @@ public class TodoService {
 
             Todo todo = todoRepository.findById(todoId).orElseThrow(
                     () -> {
-                        log.error("ID가 존재하지 않아서 실패했습니다. - ID: {}", todoId);
+                        log.error("ID가 존재하지 않아 삭제에 실패했습니다. - ID: {}", todoId);
                         throw new RuntimeException("id가 존재하지 않아서 삭제에 실패했습니다.");
                     }
             );

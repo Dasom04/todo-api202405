@@ -29,7 +29,7 @@ public class TodoController {
             BindingResult result
     ) {
         log.info("/api/todos GET! - dto: {}", requestDTO);
-        final ResponseEntity<List<FieldError>> validatedResult = getValidatedResult(result);
+        ResponseEntity<List<FieldError>> validatedResult = getValidatedResult(result);
         if (validatedResult != null) return validatedResult;
 
         try {
@@ -50,7 +50,7 @@ public class TodoController {
 
     // 할 일 목록 요청
     @GetMapping
-    public ResponseEntity<?> retrieveTodoLIst () {
+    public ResponseEntity<?> retrieveTodoList () {
         log.info("/api/todos GET request!");
         try {
             TodoListResponseDTO responseDTO = todoService.retrieve();
@@ -89,10 +89,10 @@ public class TodoController {
     // 할 일 수정하기
     @PatchMapping
     public ResponseEntity<?> updateTodo(
-            @RequestBody TodoModifyRequestDTO requestDTO,
+            @Validated @RequestBody TodoModifyRequestDTO requestDTO,
             BindingResult result
     ) {
-        final ResponseEntity<List<FieldError>> validatedResult = getValidatedResult(result);
+        ResponseEntity<List<FieldError>> validatedResult = getValidatedResult(result);
         if(validatedResult != null) return validatedResult;
 
         try {
