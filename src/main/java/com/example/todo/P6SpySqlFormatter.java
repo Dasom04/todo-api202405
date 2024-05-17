@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Configuration;
 import java.util.Locale;
 
 @Configuration
-public class P6SpyFormatter implements MessageFormattingStrategy {
+public class P6SpySqlFormatter implements MessageFormattingStrategy {
 
     @PostConstruct
     public void setLogMessageFormat() {
