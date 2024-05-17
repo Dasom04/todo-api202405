@@ -1,6 +1,7 @@
 package com.example.todo.todoapi.api;
 
 import com.example.todo.todoapi.dto.request.TodoCreateRequestDTO;
+import com.example.todo.todoapi.dto.request.TodoModifyRequestDTO;
 import com.example.todo.todoapi.dto.response.TodoListResponseDTO;
 import com.example.todo.todoapi.service.TodoService;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +22,7 @@ public class TodoController {
 
     private final TodoService todoService;
 
-    // 할 일 등록
+    // 할 일 등록하기
     @PostMapping
     public ResponseEntity<?> createTodo(
             @Validated @RequestBody TodoCreateRequestDTO requestDTO,
@@ -83,6 +84,25 @@ public class TodoController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
+
+    // 할 일 수정하기
+    @PatchMapping
+    public ResponseEntity<?> updateTodo(
+            @RequestBody TodoModifyRequestDTO requestDTO,
+            BindingResult result
+    ) {
+        final ResponseEntity<List<FieldError>> validatedResult = getValidatedResult(result);
+        if(validatedResult != null) return validatedResult;
+
+        try {
+            return ResponseEntity.ok().body(todoService.update(requestDTO));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError()
+                    .body(e.getMessage());
+        }
+    }
+
 
 
     // 입력값 검증(Validation)의 결과를 처리해 주는 전역 메서드

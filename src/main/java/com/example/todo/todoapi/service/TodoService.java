@@ -1,6 +1,7 @@
 package com.example.todo.todoapi.service;
 
 import com.example.todo.todoapi.dto.request.TodoCreateRequestDTO;
+import com.example.todo.todoapi.dto.request.TodoModifyRequestDTO;
 import com.example.todo.todoapi.dto.response.TodoDetailResponseDTO;
 import com.example.todo.todoapi.dto.response.TodoListResponseDTO;
 import com.example.todo.todoapi.entity.Todo;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -56,5 +58,19 @@ public class TodoService {
             return retrieve();
 
     }
+
+    // 할 일 수정하기
+    public TodoListResponseDTO update(final TodoModifyRequestDTO requestDTO) throws Exception {
+
+        Optional<Todo> targetEntity = todoRepository.findById(requestDTO.getId());
+
+        targetEntity.ifPresent(todo -> {
+            todo.setDone(requestDTO.isDone());
+            todoRepository.save(todo);
+        });
+        return retrieve();
+    }
+
+
 
 }
