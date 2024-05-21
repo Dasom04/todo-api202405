@@ -61,20 +61,20 @@ public class TokenProvider {
                         SignatureAlgorithm.HS512
                 )
                 // token payload에 들어갈 클레임 설정
+                .setClaims(claims) // 추가 클레임을 먼저 설정해야 함.
                 .setIssuer("Todo운영자") // iss: 발급자 정보
                 .setIssuedAt(new Date()) // iat: 발급 시간
                 .setExpiration(expiry) // exp: 만료 시간
                 .setSubject(userEntity.getId()) // sub: 토큰을 식별할 수 있는 주요 데이터
-                .setClaims(claims)
                 .compact();
 
     }
 
     /**
-     * 클라이언트가 전달한 토큰을 디코딩하여 토큰의 위조 여부를 확인
-     * 토큰을 json 파싱해서 클레임(토큰 정보)을 리턴
+     * 클라이언트가 전송한 토큰을 디코딩하여 토큰의 위조 여부를 확인
+     * 토큰을 json으로 파싱해서 클레임(토큰 정보)을 리턴
      *
-     * @param token - 필터가 전달해준 토큰
+     * @param token - 필터가 전달해 준 토큰
      * @return - 토큰 안에 있는 인증된 유저 정보를 반환
      */
     public TokenUserInfo validateAndGetTokenUserInfo(String token) {
@@ -87,7 +87,7 @@ public class TokenProvider {
                 .parseClaimsJws(token)
                 .getBody();
 
-        log.info("claims: {}",claims);
+        log.info("claims: {}", claims);
 
         return TokenUserInfo.builder()
                 .userId(claims.getSubject())

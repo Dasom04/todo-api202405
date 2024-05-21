@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -16,6 +17,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity // 자동 권한 검사를 컨트롤러의 메서드에서 전역적으로 수행하기 위한 설정.
 @RequiredArgsConstructor
 public class WebSecurityConfig {
 
@@ -34,9 +36,9 @@ public class WebSecurityConfig {
                 // spring에서 제공하는 기본 로그인 폼 사용 안함, http 기반 기본 인증도 안 쓰겠다.
                 .formLogin(form -> form.disable())
                 .httpBasic(AbstractHttpConfigurer::disable)
-                // 우리가 만든 jwtAuthFilter를 UsernamePasswordAuthenticationFilter부터 먼저 동작하도록 설정.
+                // 우리가 만든 jwtAuthFilter를 UsernamePasswordAuthenticationFilter보다 먼저 동작하도록 설정.
                 // security를 사용하면, 서버가 가동될 때 기본적으로 제공하는 여러가지 필터가 세팅이 되는데,
-                // jwtAuthFilter를 먼저 배치해서, 먼저 통과하면 인증이 완료가 되도록 처리
+                // jwtAuthFilter를 먼저 배치해서, 얘를 통과하면 인증이 완료가 되도록 처리
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(authorizeRequests ->
                         authorizeRequests
