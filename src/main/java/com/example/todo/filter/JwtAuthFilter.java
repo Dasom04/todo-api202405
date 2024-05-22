@@ -29,7 +29,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
     private final TokenProvider tokenProvider;
 
-    // 필터가 해야할 작업을 기술
+    // 필터가 해야 할 작업을 기술
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
@@ -48,7 +48,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 // 권한이 여러 개 존재할 경우 리스트로 권한 체크에 사용할 필드를 add
                 // 우리는 Role 타입의 필드 하나만으로 권한을 체크하기 때문에 하나만 add, 여러개라면 여러 개 add 하세요.
                 List<SimpleGrantedAuthority> authorityList = new ArrayList<>();
-                authorityList.add(new SimpleGrantedAuthority(tokenUserInfo.getRole().toString()));
+                authorityList.add(new SimpleGrantedAuthority("ROLE_" + tokenUserInfo.getRole().toString()));
+                log.info("{}", authorityList.get(0).toString());
 
                 // 인증 완료 처리
                 // spring security에게 인증 정보를 전달해서 전역적으로 어플리케이션 내에서
@@ -71,7 +72,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             log.info("서명이 일치하지 않습니다! 토큰이 위조 되었습니다!");
         }
 
-        // 필터 체인에게 내가 만든 필터를 실행하는 명령
+        // 필터 체인에 내가 만든 필터 실행 명령
         filterChain.doFilter(request, response);
 
 
@@ -79,12 +80,12 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
     private String parseBearerToken(HttpServletRequest request) {
 
-        // n요청 헤더에서 토큰 꺼내오기
-        // -- content-type: application
+        // 요청 헤더에서 토큰 꺼내오기
+        // -- content-type: application/json
         // -- Authorization: Bearer dhgkdhkd84fjahaf252jgh...
         String bearerToken = request.getHeader("Authorization");
 
-        // 요청 헤더에서 가져온 토큰은 순수 토큰값이 아닌
+        // 요청 헤더에서 가져온 토큰은 순수 토큰 값이 아닌
         // 앞에 Bearer가 붙어있으니 이것을 제거하는 작업
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer")) {
             return bearerToken.substring(7);

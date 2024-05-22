@@ -27,7 +27,7 @@ public class TodoController {
     // 할 일 등록 요청
     @PostMapping
     public ResponseEntity<?> createTodo(
-            //JwtAuthFilter에서 security에게 전역적으로 사용할 수 있는 인증 정보를 등럭해 놓았기 때문에
+            //JwtAuthFilter에서 security에게 전역적으로 사용할 수 있는 인증 정보를 등록해 놓았기 때문에
             // @AuthenticationPrincipal을 통해 토큰에 인증된 사용자 정보를 불러올 수 있다.
             @AuthenticationPrincipal TokenUserInfo userInfo,
             @Validated @RequestBody TodoCreateRequestDTO requestDTO,
@@ -38,18 +38,10 @@ public class TodoController {
         ResponseEntity<List<FieldError>> validatedResult = getValidatedResult(result);
         if (validatedResult != null) return validatedResult;
 
-        try {
+
             TodoListResponseDTO responseDTO = todoService.create(requestDTO, userInfo.getUserId());
-            return ResponseEntity
-                    .ok()
-                    .body(responseDTO);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity
-                    .internalServerError()
-                    .body(TodoListResponseDTO.builder()
-                            .error(e.getMessage())
-                            .build());
+            return ResponseEntity.ok().body(responseDTO);
+
         }
 
     }
@@ -62,7 +54,7 @@ public class TodoController {
     ) {
         log.info("/api/todos GET request!");
         try {
-            TodoListResponseDTO responseDTO = todoService.retrieve(userInfo.getUserId());
+            TodoListResponseDTO responseDTO = todoServic.retrieve(userInfo.getUserId());
             return ResponseEntity.ok().body(responseDTO);
         } catch (Exception e) {
             return ResponseEntity

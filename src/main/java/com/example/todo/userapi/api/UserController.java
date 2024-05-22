@@ -5,7 +5,6 @@ import com.example.todo.userapi.dto.request.LoginRequestDTO;
 import com.example.todo.userapi.dto.request.UserSignUpRequestDTO;
 import com.example.todo.userapi.dto.response.LoginResponseDTO;
 import com.example.todo.userapi.dto.response.UserSignUpResponseDTO;
-import com.example.todo.userapi.entity.Role;
 import com.example.todo.userapi.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -53,13 +52,8 @@ public class UserController {
         ResponseEntity<FieldError> resultEntity = getFieldErrorResponseEntity(result);
         if (resultEntity != null) return resultEntity;
 
-        try {
-            UserSignUpResponseDTO responseDTO = userService.create(dto);
-            return ResponseEntity.ok().body(responseDTO);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+        UserSignUpResponseDTO responseDTO = userService.create(dto);
+        return ResponseEntity.ok().body(responseDTO);
 
     }
 
@@ -81,13 +75,9 @@ public class UserController {
         ResponseEntity<FieldError> response = getFieldErrorResponseEntity(result);
         if (response != null) return response;
 
-        try {
-            LoginResponseDTO responseDTO = userService.authenticate(dto);
-            return ResponseEntity.ok().body(responseDTO);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+        LoginResponseDTO responseDTO = userService.authenticate(dto);
+        return ResponseEntity.ok().body(responseDTO);
+
     }
 
     // 일반 회원을 프리미엄 회원으로 승격하는 요청 처리
@@ -100,6 +90,8 @@ public class UserController {
             ) {
         log.info("/api/auth/promote - PUT!");
 
+        LoginResponseDTO responseDTO = userService.promoteToPremium(userInfo);
+        return ResponseEntity.ok().body(responseDTO);
 
     }
 
