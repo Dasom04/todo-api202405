@@ -42,7 +42,7 @@ public class TodoController {
             TodoListResponseDTO responseDTO = todoService.create(requestDTO, userInfo.getUserId());
             return ResponseEntity.ok().body(responseDTO);
 
-        }
+
 
     }
 
@@ -54,7 +54,7 @@ public class TodoController {
     ) {
         log.info("/api/todos GET request!");
         try {
-            TodoListResponseDTO responseDTO = todoServic.retrieve(userInfo.getUserId());
+            TodoListResponseDTO responseDTO = todoService.retrieve(userInfo.getUserId());
             return ResponseEntity.ok().body(responseDTO);
         } catch (Exception e) {
             return ResponseEntity
@@ -123,3 +123,4 @@ public class TodoController {
     }
 
 }
+
