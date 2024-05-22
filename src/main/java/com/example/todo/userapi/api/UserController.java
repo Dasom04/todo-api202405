@@ -127,7 +127,7 @@ public class UserController {
             // 2. 얻어낸 파일 경로를 통해 실제 파일 데이터를 로드하기.
             File profileFile = new File(filePath);
 
-            // 모든 사용자가 프로필 사진을 가지는것은 아니다 -> 프사를 등록하지 않은 사람은 해당 경로가 존재하지 않을것이다.
+            // 모든 사용자가 프로필 사진을 가지는것은 아니다 -> 프사를 등록하지 않은 사람은 해당 경로가 존재하지 않을 것.
             // 만약 존재하지 않는 경로라면 클라이언트로 404 status를 리턴.
             if (!profileFile.exists()) {
                 return ResponseEntity.notFound().build();
@@ -138,7 +138,7 @@ public class UserController {
 
             // 3. 응답 헤더에 컨텐츠 타입을 설정
             HttpHeaders headers = new HttpHeaders();
-            MediaType contentType = FindExtensionAndGetMediaType(filePath);
+            MediaType contentType = findExtensionAndGetMediaType(filePath);
             if (contentType == null) {
                 return ResponseEntity.internalServerError()
                         .body("발견된 파일은 이미지 파일이 아닙니다.");
@@ -154,15 +154,23 @@ public class UserController {
 
     }
 
-    private MediaType FindExtensionAndGetMediaType(String filePath) {
+    @GetMapping("/kakaologin")
+    public ResponseEntity<?> kakaoLogin(String code) {
+        log.info("/api/auth/kakaoLogin - GET! code: {}", code);
+        userService.kakaoService(code);
+    }
+
+
+
+    private MediaType findExtensionAndGetMediaType(String filePath) {
 
         // 파일 경로에서 확장자 추출
         // C:/todo_upload/fgjdgkskgkhs_abc.jpg
         String ext = filePath.substring(filePath.lastIndexOf(".") + 1);
 
-        // 추출한 확장자의 바탕으로 MediaType을 설정 -> Header에 들어갈 Content-type이 됨.
+        // 추출한 확장자를 바탕으로 MediaType을 설정 -> Header에 들어갈 Content-type이 됨.
         switch (ext.toUpperCase()) {
-            case "JPG": case "JPEG" :
+            case "JPG": case "JPEG":
                 return MediaType.IMAGE_JPEG;
             case "PNG":
                 return MediaType.IMAGE_PNG;
@@ -172,9 +180,6 @@ public class UserController {
                 return null;
 
         }
-
-
-
 
     }
 
@@ -187,8 +192,5 @@ public class UserController {
         }
         return null;
     }
-
-
-
 
 }

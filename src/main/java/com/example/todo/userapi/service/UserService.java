@@ -32,6 +32,15 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
 
+    @Value("${kakao.client_id}")
+    private String KAKAO_CLIENT_ID;
+
+    @Value("${kakao.redirect_url}")
+    private String KAKAO_REDIRECT_URL;
+
+    @Value("${kakao.client_secret}")
+    private String KAKAO_CLIENT_SECRET;
+
     @Value("${}upload.path")
     private String uploadRootPath;
 
@@ -79,7 +88,7 @@ public class UserService {
         log.info("{}님 로그인 성공!", user.getUserName());
 
         // 로그인 성공 후에 클라이언트에게 뭘 리턴해 줄 것인가?
-        // -> JWT를 클라이언트에게 발급 해 주어야 한다! -> 로그인 유지를 위해서! (토큰을 만들어서 리턴해 줄것이다. )
+        // -> JWT를 클라이언트에 발급해 주어야 한다! -> 로그인 유지를 위해! (토큰을 만들어서 리턴해 줄것이다. )
         String token = tokenProvider.createToken(user);
 
         return new LoginResponseDTO(user, token);
@@ -108,7 +117,7 @@ public class UserService {
     }
 
     /**
-     * 업로드 된 파일을 서버에 저장하고 저장 경로르 리턴.
+     * 업로드 된 파일을 서버에 저장하고 저장 경로를 리턴.
      *
      * @param profileImage - 업로드 된 파일 정보
      * @return 실제로 저장된 이미지 경로
@@ -116,17 +125,17 @@ public class UserService {
     public String uploadProfileImage(MultipartFile profileImage) throws IOException {
 
         // 루트 디렉토리가 실존하는지 확인 후 존재하지 않으면 생성.
-        File rootDir = new File((uploadRootPath));
+        File rootDir = new File(uploadRootPath);
         if (!rootDir.exists()) rootDir.mkdirs();
 
-        // 파일명을 유니크하게 변경 (이름 충졸 가능성을 대비)
+        // 파일명을 유니크하게 변경 (이름 충돌 가능성을 대비)
         // UUID와 원본 파일명을 결합 -> 규칙은 없어요.
         String uniqueFileName
                 = UUID.randomUUID() + "_" + profileImage.getOriginalFilename();
 
         // 파일을 저장
-        File uploadeFile = new File(uploadRootPath + "/" + uniqueFileName);
-        profileImage.transferTo(uploadeFile);
+        File uploadFile = new File(uploadRootPath + "/" + uniqueFileName);
+        profileImage.transferTo(uploadFile);
 
         return uniqueFileName;
 
@@ -135,8 +144,15 @@ public class UserService {
 
     public String findProfilePath (String userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException());
-        // DB에는 파일명만 저장 -> service가 가지고 있는 root path
+        // DB에는 파일명만 저장. -> service가 가지고 있는 Root Path와 연결해서 리턴
         return uploadRootPath + "/" + user.getProfileImg();
+
+    }
+
+    public void kakaoService(String code) {
+
+
+
 
     }
 }
