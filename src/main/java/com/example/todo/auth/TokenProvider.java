@@ -74,11 +74,11 @@ public class TokenProvider {
     }
 
     public String createAccessKey(User userEntity) {
-        return createToken(userEntity, SECRET_KEY, 30, ChronoUnit.SECONDS);
+        return createToken(userEntity, SECRET_KEY, 15, ChronoUnit.SECONDS);
     }
 
     public String createRefreshKey(User userEntity) {
-        return createToken(userEntity, REFRESH_SECRETE_KEY, 30, ChronoUnit.SECONDS);
+        return createToken(userEntity, REFRESH_SECRETE_KEY, 2, ChronoUnit.MINUTES);
     }
 
     // 토큰에서 클레임을 추출하는 로직을 분리했습니다.
@@ -94,6 +94,11 @@ public class TokenProvider {
         return claims;
     }
 
+    // 리프레시 토큰 만료 시간만 추출하기
+    public Date getExpiryDate(String token) {
+        Claims claims = getClaims(token, REFRESH_SECRETE_KEY);
+        return claims.getExpiration();
+    }
 
     /**
      * 클라이언트가 전송한 토큰을 디코딩하여 토큰의 위조 여부를 확인
