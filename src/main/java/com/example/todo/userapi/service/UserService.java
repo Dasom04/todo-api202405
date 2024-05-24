@@ -183,7 +183,7 @@ public class UserService {
             // 이메일이 중복되지 않았다. -> 이전에 로그인 한 적 없음 -> DB에 데이터 세팅
             User saved = userRepository.save(userDTO.toEntity(accessToken));
         }
-        // 이메일 중복됐다? ->  이전에 로근인 한 적이 있다. -> DB에 데이터를 또 넣을 필요는 없다.
+        // 이메일 중복됐다? ->  이전에 로그인 한 적이 있다. -> DB에 데이터를 또 넣을 필요는 없다.
         User foundUser = userRepository.findByEmail(userDTO.getKakaoAccount().getEmail()).orElseThrow();
 
         // 우리 사이트에서 사용하는 jwt를 생성.
@@ -280,9 +280,9 @@ public class UserService {
                 .orElseThrow();
 
         String accessToken = foundUser.getAccessToken();
-        //accesToken이 null이 아니라면 카카오 로그인 한 애겠지?
+        //accessToken이 null이 아니라면 카카오 로그인 한 애겠지?
         if (accessToken != null) {
-            String reqURI = "http://kapi.kakao.com/v1/user/logout";
+            String reqURI = "https://kapi.kakao.com/v1/user/logout";
             HttpHeaders headers = new HttpHeaders();
             headers.add("Authorization", "Bearer " + accessToken);
 
