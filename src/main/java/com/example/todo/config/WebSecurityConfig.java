@@ -58,7 +58,7 @@ public class WebSecurityConfig {
                                 // .requestMatchers(HttpMethod.POST, "/api/todos").hasRole("ADMIN")
 
                                 // /api/auth/**은 permit이지만, /promote는 검증이 필요하기 때문에 추가. (순서 조심!)
-                                .requestMatchers(HttpMethod.PUT, "/api/auth/promote").hasAnyRole("ROLE_COMMON") // 1. 이 부분이
+                                .requestMatchers(HttpMethod.PUT, "/api/auth/promote").hasAnyRole("COMMON") // 1. 이 부분이
                                 .requestMatchers(HttpMethod.PUT, "/api/auth/promote").authenticated()
                                 .requestMatchers("/api/auth/load-profile").authenticated()
                                 // '/api/auth'로 시작하는 요청과 '/'요청은 권한 검사 없이 허용하겠다.

@@ -26,8 +26,8 @@ public class TokenProvider {
     @Value("${jwt.secret}")
     private String SECRET_KEY;
 
-    @Value("${jwt,refresh-secret}")
-    private String REFRESH_SECRETE_KEY;
+    @Value("${jwt.refresh-secret}")
+    private String REFRESH_SECRET_KEY;
 
     /**
      * JSON Web Token을 생성하는 메서드
@@ -78,14 +78,14 @@ public class TokenProvider {
     }
 
     public String createRefreshKey(User userEntity) {
-        return createToken(userEntity, REFRESH_SECRETE_KEY, 2, ChronoUnit.MINUTES);
+        return createToken(userEntity, REFRESH_SECRET_KEY, 2, ChronoUnit.MINUTES);
     }
 
     // 토큰에서 클레임을 추출하는 로직을 분리했습니다.
-    private Claims getClaims(String token, String secreteKey) {
+    private Claims getClaims(String token, String secretKey) {
         Claims claims = Jwts.parserBuilder()
                 // 토큰 발급자의 발급 당시의 서명을 넣어줌.
-                .setSigningKey(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
+                .setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes()))
                 // 서명 위조 검사: 위조된 경우에는 예외가 발생합니다.
                 // 위조가 되지 않은 경우 payload를 리턴
                 .build()
@@ -96,7 +96,7 @@ public class TokenProvider {
 
     // 리프레시 토큰 만료 시간만 추출하기
     public Date getExpiryDate(String token) {
-        Claims claims = getClaims(token, REFRESH_SECRETE_KEY);
+        Claims claims = getClaims(token, REFRESH_SECRET_KEY);
         return claims.getExpiration();
     }
 
@@ -108,7 +108,7 @@ public class TokenProvider {
      * @return - 토큰 안에 있는 인증된 유저 정보를 반환
      */
     public TokenUserInfo validateAndGetTokenUserInfo(String token) {
-        final Claims claims = getClaims(token, SECRET_KEY);
+        Claims claims = getClaims(token, SECRET_KEY);
 
         log.info("claims: {}", claims);
 
@@ -122,7 +122,7 @@ public class TokenProvider {
     // refresh token의 유효성을 검사합니다.
     public boolean validateRefreshToken(String token) {
         try {
-            getClaims(token, REFRESH_SECRETE_KEY);
+            getClaims(token, REFRESH_SECRET_KEY);
             return true;
         } catch (Exception e) {
             log.warn("유효하지 않은 리프레시 토큰!");

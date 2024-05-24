@@ -45,7 +45,7 @@ public class User {
     @Column(length = 400)
     private String refreshToken; // 리프레시 토큰의 값.
 
-    private Date refreshTokenExrieyDate; // 리프레시 토큰의 만료일.
+    private Date refreshTokenExpiryDate; // 리프레시 토큰의 만료일.
 
     // 등급 수정 메서드 (엔터티에 @setter를 설정하지 않고 변경 가능성이 있는 필드를 직접 수정하는 메서드를 작성하는 것이 일반적)
     public void changeRole (Role role) {
@@ -62,7 +62,7 @@ public class User {
     }
 
     public void changeRefreshExpiryDate (Date date) {
-        this.refreshTokenExrieyDate = date;
+        this.refreshTokenExpiryDate = date;
     }
 
 }

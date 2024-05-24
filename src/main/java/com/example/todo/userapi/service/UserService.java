@@ -103,7 +103,7 @@ public class UserService {
         Map<String, String> token = getTokenMap(user);
 
         // 리프레시 토큰은 수명이 깁니다. (최소 2~3주, 2~3개월도 가능)
-        // 데이터 베이스에 저장해 놓고, 새로운 엑세스 토큰 요청 때마다 만료일을 조회해서 비교.
+        // 데이터 베이스에 저장해 놓고, 새로운 액세스 토큰 요청 때마다 만료일을 조회해서 비교.
         user.changeRefreshToken(token.get("refresh_token"));
         user.changeRefreshExpiryDate(tokenProvider.getExpiryDate(token.get("refresh_token")));
         userRepository.save(user);
@@ -126,12 +126,12 @@ public class UserService {
         User saved = userRepository.save(user);
 
         // 토큰을 재발급! (새롭게 변경된 정보가 반영된)
-        final Map<String, String> token = getTokenMap(user);
+        Map<String, String> token = getTokenMap(user);
 
         return new LoginResponseDTO(saved, token);
     }
 
-    // AccessKey와 Refresh를 새롭게 발급받아 Map으로 포장해 주는 메서드.
+    // AccessKey와 RefreshKey를 새롭게 발급받아 Map으로 포장해 주는 메서드.
     private Map<String, String> getTokenMap(User user) {
         String accessToken = tokenProvider.createAccessKey(user);
         String refreshToken = tokenProvider.createRefreshKey(user);
@@ -150,7 +150,7 @@ public class UserService {
      */
     public String uploadProfileImage(MultipartFile profileImage) throws IOException {
 
-        // 루트 디렉토리가 실존하는지 확인 후 존재하지 않으면 생성.
+        // 루트 디렉토리가 실존하는 지 확인 후 존재하지 않으면 생성.
         File rootDir = new File(uploadRootPath);
         if (!rootDir.exists()) rootDir.mkdirs();
 
@@ -183,9 +183,9 @@ public class UserService {
 
     public LoginResponseDTO kakaoService(String code) {
 
-        // 인가 코드를 통해서 토큰을 발급받기
+        // 인가 코드를 통해 토큰을 발급받기
         String accessToken = getKakaoAccessToken(code);
-        log.info("token:{}", accessToken);
+        log.info("token: {}", accessToken);
 
         // 토큰을 통해 사용자 정보를 가져오기
         KakaoUserDTO userDTO = getKakaoUserInfo(accessToken);
@@ -196,10 +196,10 @@ public class UserService {
         // -> 화면단에서는 적절한 url을 선택하여 redirect를 진행.
 
         if (!isDuplicate(userDTO.getKakaoAccount().getEmail())) {
-            // 이메일이 중복되지 않았다. -> 이전에 로그인 한 적 없음 -> DB에 데이터 세팅
+            // 이메일이 중복되지 않았다. -> 이전에 로그인 한 적 없음 -> DB에 데이터를 세팅
             User saved = userRepository.save(userDTO.toEntity(accessToken));
         }
-        // 이메일 중복됐다? ->  이전에 로그인 한 적이 있다. -> DB에 데이터를 또 넣을 필요는 없다.
+        // 이메일이 중복됐다? ->  이전에 로그인 한 적이 있다. -> DB에 데이터를 또 넣을 필요는 없다.
         User foundUser = userRepository.findByEmail(userDTO.getKakaoAccount().getEmail()).orElseThrow();
 
         // 우리 사이트에서 사용하는 jwt를 생성.
@@ -296,7 +296,7 @@ public class UserService {
                 .orElseThrow();
 
         String accessToken = foundUser.getAccessToken();
-        //accessToken이 null이 아니라면 카카오 로그인 한 애겠지?
+        //accessToken이 null이 아니라면 카카오 로그인을 한 애겠지?
         if (accessToken != null) {
             String reqURI = "https://kapi.kakao.com/v1/user/logout";
             HttpHeaders headers = new HttpHeaders();
@@ -321,7 +321,7 @@ public class UserService {
         if (isValid) {
             // 토큰값이 유효 하다면 만료일자를 검사하자
             User foundUser = userRepository.findByRefreshToken(refreshToken).orElseThrow();
-            if (!foundUser.getRefreshTokenExrieyDate().before(new Date())) {
+            if (!foundUser.getRefreshTokenExpiryDate().before(new Date())) {
                 // 만료일이 오늘보다 이전이 아니라면 -> 만료되지 않았다면
                 String newAccessKey = tokenProvider.createAccessKey(foundUser);
                 return newAccessKey;
