@@ -26,13 +26,14 @@ public class GlobalExceptionHandler { // 모든 컨드롤러들의 전역적인 
     }
     */
 
-//    @ExceptionHandler({RuntimeException.class, NoRegisteredArgumentException.class})
-//    public ResponseEntity<?> handleRuntimeException(RuntimeException e) {
-//        return ResponseEntity.badRequest().body(e.getMessage());
-//    }
+    @ExceptionHandler({RuntimeException.class, NoRegisteredArgumentException.class})
+    public ResponseEntity<?> handleRuntimeException(RuntimeException e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
+    }
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<?> handleRuntimeException(IllegalArgumentException e) {
+        log.info("IllegalArgumentException 호출!");
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
     }
 
